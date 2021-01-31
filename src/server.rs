@@ -11,7 +11,7 @@ impl Server {
     }
 
     pub fn run(self) {
-        println!("Listening on {}", self.addr)
+        println!("Listening on {}", self.addr);
 
         let listener = TcpListener::bind(&self.addr).unwrap();
 
@@ -19,7 +19,12 @@ impl Server {
             match listener.accept() {
                 Ok((mut stream, _)) => {
                     let mut buffer = [0; 1024];
-                    stream.read(&mut buffer);
+                    match stream.read(&mut buffer) {
+                        Ok(_) => {
+                            println!("Received a request: {}", String::from_utf8_lossy(&buffer));
+                        },
+                        Err(e) => println!("Failed to read from connection {}", e),
+                    }
                 },
                 Err(e) => println!("Failed to establish connection: {}", e),
             }
